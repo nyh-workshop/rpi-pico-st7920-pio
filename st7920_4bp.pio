@@ -1,0 +1,60 @@
+.program st7920_4bp
+.side_set 1 opt 
+.define public N 31
+
+.wrap_target
+
+set pins, 0
+pull block
+
+out pins, 28 side 0
+nop side 1
+nop side 0
+
+out pins, 4 side 0
+nop side 1
+nop side 0
+
+.wrap
+
+% c-sdk {
+static inline void st7920_4bp_program_init(PIO pio, uint sm, uint offset, uint pin_E, uint pin_0) {
+    pio_sm_config c = st7920_4bp_program_get_default_config(offset);
+
+    pio_gpio_init(pio, pin_E);
+    pio_gpio_init(pio, pin_0);
+    pio_gpio_init(pio, pin_0 + 1);
+    pio_gpio_init(pio, pin_0 + 2);
+    pio_gpio_init(pio, pin_0 + 3);
+
+    gpio_set_dir(pin_E, GPIO_OUT);
+
+    sm_config_set_sideset_pins(&c, pin_E);
+
+    // Tested lowest enable time for TG12864E-03A.
+    // Enable pulse width: 4.1uS.
+    sm_config_set_clkdiv_int_frac(&c, 512, 0);
+    
+    //uint pinsToSetAsOutput = (1u << pin_E) | (1u << pin_RW);
+    uint pinsToSetAsOutput = (1u << pin_E);
+    pio_sm_set_pins_with_mask(pio, sm, pinsToSetAsOutput, pinsToSetAsOutput);
+    pio_sm_set_pindirs_with_mask(pio, sm,  pinsToSetAsOutput,  pinsToSetAsOutput);
+
+    pio_sm_set_pins_with_mask(pio, sm, 0, 0xf << pin_0);
+    pio_sm_set_consecutive_pindirs(pio, sm, pin_0, 4, true);
+
+    sm_config_set_out_pins(&c, pin_0, 4);
+    sm_config_set_set_pins(&c, pin_0, 4);
+    //sm_config_set_set_pins(&c, pin_E, 1);
+
+    sm_config_set_out_shift(&c, false, false, 32);
+
+    sm_config_set_fifo_join(&c, PIO_FIFO_JOIN_TX);
+
+    // Load our configuration, and jump to the start of the program
+    pio_sm_init(pio, sm, offset, &c);
+
+    // Set the state machine running
+    pio_sm_set_enabled(pio, sm, true);
+}
+%}
