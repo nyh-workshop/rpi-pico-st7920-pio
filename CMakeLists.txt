@@ -21,7 +21,7 @@ pico_sdk_init()
 
 file (GLOB U8G2_SRC "E:/u8g2/csrc/*.h" "E:/u8g2/csrc/*.c")
 
-add_executable(pio_st7920_4bp pio_st7920_4bp.cpp picture.cpp st7920.cpp u8g2_hal_rpi_pico.cpp ${U8G2_SRC})
+add_executable(pio_st7920_4bp pio_st7920_4bp.cpp picture.cpp st7920.cpp u8g2_hal_rpi_pico.cpp ${U8G2_SRC} u8g2_GraphicsTest.cpp)
 
 include_directories("E:/u8g2/csrc")
 

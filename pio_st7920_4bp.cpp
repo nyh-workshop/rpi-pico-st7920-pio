@@ -11,6 +11,7 @@ extern "C" {
 #include "st7920.h"
 #include "picture.h"
 #include "u8g2_hal_rpi_pico.h"
+#include "u8g2_GraphicsTest.h"
 
 const uint E_PIN = 15;
 const uint RS_PIN = 14;
@@ -68,29 +69,26 @@ extern "C" int main()
     // uint32_t bufferSize = 8 * tileHeight * tileWidth;
   
     u8g2_ClearBuffer(&u8g2);
-    u8g2_DrawRFrame(&u8g2, 1,1,126, 63, 5);
-    u8g2_SetFont(&u8g2, u8g2_font_5x7_tf);
-    u8g2_DrawStr(&u8g2, 22, 16,"Hello World U8G2!");
-    u8g2_DrawStr(&u8g2, 22, 32,"Raspberry Pi Pico");
-    u8g2_SetFont(&u8g2, u8g2_font_open_iconic_weather_2x_t);
-    u8g2_DrawGlyph(&u8g2, 3, 55, 64);
-    u8g2_SetFont(&u8g2, u8g2_font_open_iconic_www_2x_t);
-    u8g2_DrawGlyph(&u8g2, 24, 55, 81);    
-    u8g2_DrawGlyph(&u8g2, 45, 55, 78);
-    u8g2_DrawGlyph(&u8g2, 66, 55, 65);
-    u8g2_SetFont(&u8g2, u8g2_font_open_iconic_weather_2x_t);
-    u8g2_DrawGlyph(&u8g2, 87, 55, 68);
-    u8g2_DrawGlyph(&u8g2, 107, 55, 69);
 
     // u8g2_SendBuffer(&u8g2);
     // U8G2 SendBuffer only uses 8-bit parallel and SPI. Bypassing it and using the bitmap fill instead.
-    st7920.fillBitmap(frameBufferPtr);    
+    st7920.fillBitmap(frameBufferPtr);
+
+    // U8G2 test program ported from https://github.com/olikraus/u8g2/blob/master/sys/arduino/u8g2_full_buffer/GraphicsTest/GraphicsTest.ino:    
+    uint16_t draw_state = 0;
     
     while(1) {
-        gpio_put(LED_PIN, 1);
-        sleep_ms(500);
-        gpio_put(LED_PIN, 0);
-        sleep_ms(500);
+        u8g2_ClearBuffer(&u8g2);
+        draw(&u8g2, draw_state);
+        st7920.fillBitmap(frameBufferPtr);
+
+        // increase the state
+        draw_state++;
+        if (draw_state >= (12 * 8))
+            draw_state = 0;
+
+        // deley between each page
+        sleep_ms(25);
     }
 
     return 0;
