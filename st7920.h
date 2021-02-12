@@ -28,6 +28,7 @@ class ST7920 {
     public:
     ST7920();
     ST7920(uint D4_PIN, uint E_PIN, uint RS_PIN, uint RST_PIN);
+    void writeByte(uint8_t inputByte);
     void command(uint8_t inputCommand);
     void data(uint8_t inputData);
     void fillBitmap(uint8_t* inputBitmap);

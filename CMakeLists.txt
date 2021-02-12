@@ -19,7 +19,11 @@ pico_sdk_init()
 
 # Add executable. Default name is the project name, version 0.1
 
-add_executable(pio_st7920_4bp pio_st7920_4bp.cpp picture.cpp st7920.cpp)
+file (GLOB U8G2_SRC "E:/u8g2/csrc/*.h" "E:/u8g2/csrc/*.c")
+
+add_executable(pio_st7920_4bp pio_st7920_4bp.cpp picture.cpp st7920.cpp u8g2_hal_rpi_pico.cpp ${U8G2_SRC})
+
+include_directories("E:/u8g2/csrc")
 
 pico_generate_pio_header(pio_st7920_4bp ${CMAKE_CURRENT_LIST_DIR}/st7920_4bp.pio)
 
@@ -37,6 +41,4 @@ target_link_libraries(pio_st7920_4bp
         hardware_pio
         )
 
-
 pico_add_extra_outputs(pio_st7920_4bp)
-

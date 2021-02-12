@@ -10,6 +10,10 @@ ST7920::ST7920(uint D4_PIN, uint E_PIN, uint RS_PIN, uint RST_PIN) {
     RST_PIN_ = RST_PIN;
 }
 
+void ST7920::writeByte(uint8_t inputByte) {
+    pio_sm_put_blocking(pio0, 0, inputByte);
+}
+
 void ST7920::command(uint8_t inputCommand) {
 
     sleep_us(500);
